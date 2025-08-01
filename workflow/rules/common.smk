@@ -9,4 +9,4 @@ BMK_DIR = config.get("benchmark_dir", "benchmarks")
 
 wildcard_constraints:
     sm="|".join(SAMPLES),
-    fname=r"[^/]*"
+    fname=r"[^/]*",

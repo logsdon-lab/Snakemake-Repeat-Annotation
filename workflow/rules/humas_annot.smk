@@ -1,4 +1,3 @@
-
 HUMAS_ANNOT_OUTDIR = join(OUTPUT_DIR, "humas_annot")
 HUMAS_ANNOT_LOGDIR = join(LOG_DIR, "humas_annot")
 HUMAS_ANNOT_BMKDIR = join(BMK_DIR, "humas_annot")

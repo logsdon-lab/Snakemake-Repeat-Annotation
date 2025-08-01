@@ -1,4 +1,3 @@
-
 RM_OUTDIR = join(OUTPUT_DIR, "repeatmasker")
 RM_LOGDIR = join(LOG_DIR, "repeatmasker")
 RM_BMKDIR = join(BMK_DIR, "repeatmasker")
@@ -90,7 +89,7 @@ rule run_repeatmasker:
         species=config["repeatmasker"]["species"],
         engine=config["repeatmasker"]["engine"],
     resources:
-        mem=config["repeatmasker"]["mem"]
+        mem=config["repeatmasker"]["mem"],
     conda:
         "../envs/tools.yaml"
     log:
