@@ -6,6 +6,17 @@ Runs:
 * `ModDotPlot`
 * `HumAS-SD` or `HumAS-HMMER`
 
+## Getting Started
+```bash
+git clone https://github.com/logsdon-lab/Snakemake-Repeat-Annotation.git --recursive
+```
+
+## Usage
+```bash
+snakemake -np --configfile config/config.yaml
+```
+
+## Configuration
 ```yaml
 # Input files
 samples:
