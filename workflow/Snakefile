@@ -1,0 +1,30 @@
+include: "rules/common.smk"
+include: "rules/split_multifasta.smk"
+
+
+outputs = []
+
+if config.get("repeatmasker"):
+
+    include: "rules/repeatmasker.smk"
+
+    outputs.append(rules.repeatmasker_all.input)
+
+
+if config.get("moddotplot"):
+
+    include: "rules/moddotplot.smk"
+
+    outputs.append(rules.moddotplot_all.input)
+
+
+if config.get("humas_annot"):
+
+    include: "rules/humas_annot.smk"
+
+    outputs.append(rules.humas_annot_all.input)
+
+
+rule all:
+    input:
+        outputs,

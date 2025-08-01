@@ -1,0 +1,7 @@
+.snakemake
+logs*
+benchmarks*
+results*
+RM_*
+core*
+.cache

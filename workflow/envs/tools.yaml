@@ -1,0 +1,11 @@
+channels:
+- conda-forge
+- bioconda
+dependencies:
+- python==3.12
+- repeatmasker==4.1.0
+- seqtk
+- samtools
+- pip
+- pip:
+  - ModDotPlot>=0.9.1

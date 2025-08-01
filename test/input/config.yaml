@@ -1,0 +1,24 @@
+samples:
+  HG00096:
+    fa: "test/input/HG00096_cens.fa.gz"
+
+output_dir: "test/output/results"
+log_dir: "test/output/logs"
+benchmark_dir: "test/output/benchmarks"
+
+repeatmasker:
+  species: "human"
+  engine: "rmblast"
+  threads: 12
+  mem: 20GB
+
+moddotplot:
+  mem: 20GB
+  window: 5000
+  ident_thr: 0.7
+
+humas_annot:
+  mode: "sd" # or "hmmer"
+  threads: 12
+  mem: 20GB
+  hmm_profile: "data/AS-HORs-hmmer3.4-071024.hmm.gz"
