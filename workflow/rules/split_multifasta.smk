@@ -27,7 +27,7 @@ checkpoint split_multifasta:
         mkdir -p {params.output_dir}
         awk '{{
             if (substr($0, 1, 1)==">") {{
-                filename=("{params.output_dir}/" substr($0,2) ".fa")
+                filename=("{params.output_dir}/{wildcards.sm}_" substr($0,2) ".fa")
             }}
             print $0 > filename
         }}' <(zcat -f {input.fa} {params.extract_region}) 2> {log}

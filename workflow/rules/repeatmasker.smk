@@ -31,7 +31,7 @@ rule setup_repeatmasker:
 
 rule rename_for_repeatmasker:
     input:
-        fa=join(SPLIT_MULTIFA_DIR, "{fname}.fa"),
+        fa=join(SPLIT_MULTIFA_DIR, "{sm}_{fname}.fa"),
     output:
         original_fa_idx=temp(
             join(RM_OUTDIR, "fa", "{sm}_renamed", "{fname}_original.fa.fai"),
@@ -135,9 +135,10 @@ rule reformat_repeatmasker_output:
 # Gather all RM output
 def refmt_rm_output(wc):
     _ = checkpoints.split_multifasta.get(**wc).output
-    fa_glob_pattern = join(SPLIT_MULTIFA_DIR, "{fname}.fa")
-    wcs = glob_wildcards(fa_glob_pattern)
-    fnames = wcs.fname
+    fnames = glob_wildcards(join(SPLIT_MULTIFA_DIR, f"{wc.sm}_{{fname}}.fa")).fname
+
+    if not fnames:
+        breakpoint()
     return expand(rules.reformat_repeatmasker_output.output, sm=wc.sm, fname=fnames)
 
 

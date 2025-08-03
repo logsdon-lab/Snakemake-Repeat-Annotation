@@ -23,7 +23,6 @@ samples:
   # Sample name
   name:
     # Fasta (gzip or ungzipped)
-    # Each sequence should be uniquely named across all samples!
     fa: "test/input/HG00096_cens.fa.gz"
     # Bedfile
     # bed: ...

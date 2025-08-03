@@ -33,9 +33,9 @@ use rule * from HumAS_Annot as humas_*
 def humas_annot_sm_outputs(wc):
     _ = checkpoints.split_multifasta.get(**wc).output
     wcs = glob_wildcards(
-        join(SPLIT_MULTIFA_DIR, "{fname}.fa"),
+        join(SPLIT_MULTIFA_DIR, f"{wc.sm}_{{fname}}.fa"),
     )
-    fnames = wcs.fname
+    fnames = [f"{wc.sm}_{fname}" for fname in wcs.fname]
 
     return {
         "stv": expand(rules.humas_generate_stv.output, zip, fname=fnames),

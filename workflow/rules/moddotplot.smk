@@ -5,7 +5,7 @@ MODDOTPLOT_BMKDIR = join(BMK_DIR, "moddotplot")
 
 rule moddotplot:
     input:
-        fasta=join(SPLIT_MULTIFA_DIR, "{fname}.fa"),
+        fasta=join(SPLIT_MULTIFA_DIR, "{sm}_{fname}.fa"),
     output:
         plots=expand(
             join(
@@ -41,9 +41,7 @@ rule moddotplot:
 # Gather all RM output
 def moddotplot_output(wc):
     _ = checkpoints.split_multifasta.get(**wc).output
-    fa_glob_pattern = join(SPLIT_MULTIFA_DIR, "{fname}.fa")
-    wcs = glob_wildcards(fa_glob_pattern)
-    fnames = wcs.fname
+    fnames = glob_wildcards(join(SPLIT_MULTIFA_DIR, f"{wc.sm}_{{fname}}.fa")).fname
     return expand(rules.moddotplot.output, sm=wc.sm, fname=fnames)
 
 
