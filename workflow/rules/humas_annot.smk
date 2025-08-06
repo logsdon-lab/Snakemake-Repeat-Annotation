@@ -33,7 +33,7 @@ rule convert_stv_bed_to_absolute_coords:
     input:
         bed=rules.humas_generate_stv.output,
     output:
-        bed=join(HUMAS_ANNOT_OUTDIR, "{sm}_{fname}", "stv_row_abs.bed"),
+        bed=join(HUMAS_ANNOT_OUTDIR, "{fname}", "stv_row_abs.bed"),
     shell:
         """
         awk 'NR > 1 {{

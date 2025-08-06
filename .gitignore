@@ -5,3 +5,4 @@ results*
 RM_*
 core*
 .cache
+*.yaml
