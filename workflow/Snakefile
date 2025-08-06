@@ -25,6 +25,20 @@ if config.get("humas_annot"):
     outputs.append(rules.humas_annot_all.input)
 
 
+rule cleanup_split_fa:
+    input:
+        chkpt=outputs,
+        fofn=rules.split_multifasta.output,
+    output:
+        touch(join(OUTPUT_DIR, "fa", "cleanup_{sm}.done")),
+    shell:
+        """
+        cat {input.fofn} | xargs -I {{}} bash -c "rm {{}}"
+        """
+
+
 rule all:
     input:
         outputs,
+        expand(rules.cleanup_split_fa.output, sm=SAMPLES),
+    default_target: True

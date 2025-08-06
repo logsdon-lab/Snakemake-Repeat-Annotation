@@ -1,3 +1,4 @@
+import re
 import sys
 import csv
 import argparse
@@ -9,6 +10,7 @@ logging.basicConfig(
     stream=sys.stderr,
 )
 
+RGX_ST_COORD = re.compile(r"^.+:(\d+)-")
 
 def main():
     ap = argparse.ArgumentParser("Reformat RepeatMasker output.")
@@ -64,6 +66,11 @@ def main():
                 logging.warning(
                     f"Could not find {renamed_name} in rename_legend. Writing original name."
                 )
+            mtch = RGX_ST_COORD.search(line[4])
+            if mtch:
+                ctg_st = int(mtch.group(2))
+                line[5] = str(int(line[7]) + ctg_st)
+                line[6] = str(int(line[8]) + ctg_st)
 
             rm_writer.writerow(line)
 

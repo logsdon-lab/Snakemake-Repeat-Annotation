@@ -75,7 +75,7 @@ rule run_repeatmasker:
         setup=rules.setup_repeatmasker.output,
         seq=rules.rename_for_repeatmasker.output.renamed_fa,
     output:
-        temp(
+        rm_out=temp(
             join(
                 RM_OUTDIR,
                 "repeats",
@@ -110,7 +110,7 @@ rule run_repeatmasker:
 # Rename repeatmasker output to match the original sequence names.
 rule reformat_repeatmasker_output:
     input:
-        rm_out=rules.run_repeatmasker.output,
+        rm_out=rules.run_repeatmasker.output.rm_out,
         original_fai=rules.rename_for_repeatmasker.output.original_fa_idx,
         renamed_fai=rules.rename_for_repeatmasker.output.renamed_fa_idx,
     output:
@@ -137,8 +137,6 @@ def refmt_rm_output(wc):
     _ = checkpoints.split_multifasta.get(**wc).output
     fnames = glob_wildcards(join(SPLIT_MULTIFA_DIR, f"{wc.sm}_{{fname}}.fa")).fname
 
-    if not fnames:
-        breakpoint()
     return expand(rules.reformat_repeatmasker_output.output, sm=wc.sm, fname=fnames)
 
 
@@ -152,7 +150,7 @@ rule repeatmasker_output:
             RM_OUTDIR,
             "repeats",
             "all",
-            "{sm}_cens.fa.out",
+            "{sm}.fa.out",
         ),
     conda:
         "../envs/tools.yaml"

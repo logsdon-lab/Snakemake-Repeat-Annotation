@@ -38,11 +38,34 @@ rule moddotplot:
         """
 
 
+rule convert_bedpe_to_absolute:
+    input:
+        rules.moddotplot.output.bed,
+    output:
+        bed=join(MODDOTPLOT_OUTDIR, "{sm}", "{fname}", "{fname}_abs.bed"),
+    shell:
+        """
+        # Only self-identity.
+        awk 'NR > 1 {{
+            match($1, ":(.+)-", sts);
+            $1 += sts[1]; $2 += sts[1];
+            $4 += sts[1]; $5 += sts[1];
+            print
+        }}' {input} > {output}
+        """
+
+
 # Gather all RM output
 def moddotplot_output(wc):
     _ = checkpoints.split_multifasta.get(**wc).output
+    # TODO: Use fofn instead of globs.
     fnames = glob_wildcards(join(SPLIT_MULTIFA_DIR, f"{wc.sm}_{{fname}}.fa")).fname
-    return expand(rules.moddotplot.output, sm=wc.sm, fname=fnames)
+    outputs = list(expand(rules.moddotplot.output, sm=wc.sm, fname=fnames))
+    if "bed" in config["samples"][wc.sm]:
+        outputs.extend(
+            expand(rules.convert_bedpe_to_absolute.output, sm=wc.sm, fname=fnames)
+        )
+    return outputs
 
 
 rule run_moddotplot:

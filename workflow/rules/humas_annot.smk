@@ -29,6 +29,21 @@ module HumAS_Annot:
 use rule * from HumAS_Annot as humas_*
 
 
+rule convert_stv_bed_to_absolute_coords:
+    input:
+        bed=rules.humas_generate_stv.output,
+    output:
+        bed=join(HUMAS_ANNOT_OUTDIR, "{sm}_{fname}", "stv_row_abs.bed"),
+    shell:
+        """
+        awk 'NR > 1 {{
+            match($1, ":(.+)-", sts);
+            $1 += sts[1]; $2 += sts[1];
+            print
+        }}' {input} > {output}
+        """
+
+
 # https://stackoverflow.com/a/63040288
 def humas_annot_sm_outputs(wc):
     _ = checkpoints.split_multifasta.get(**wc).output
@@ -38,7 +53,9 @@ def humas_annot_sm_outputs(wc):
     fnames = [f"{wc.sm}_{fname}" for fname in wcs.fname]
 
     return {
-        "stv": expand(rules.humas_generate_stv.output, zip, fname=fnames),
+        "stv": expand(
+            rules.convert_stv_bed_to_absolute_coords.output, zip, fname=fnames
+        ),
     }
 
 

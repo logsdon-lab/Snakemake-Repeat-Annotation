@@ -6,11 +6,9 @@ checkpoint split_multifasta:
         fa=lambda wc: config["samples"][wc.sm]["fa"],
         bed=lambda wc: config["samples"][wc.sm].get("bed", []),
     output:
-        touch(
-            join(
-                SPLIT_MULTIFA_DIR,
-                "{sm}.done",
-            )
+        join(
+            SPLIT_MULTIFA_DIR,
+            "{sm}.fofn",
         ),
     log:
         join(LOG_DIR, "split_multifasta_{sm}.log"),
@@ -28,7 +26,8 @@ checkpoint split_multifasta:
         awk '{{
             if (substr($0, 1, 1)==">") {{
                 filename=("{params.output_dir}/{wildcards.sm}_" substr($0,2) ".fa")
+                print filename
             }}
             print $0 > filename
-        }}' <(zcat -f {input.fa} {params.extract_region}) 2> {log}
+        }}' <(zcat -f {input.fa} {params.extract_region}) > {output} 2> {log}
         """
