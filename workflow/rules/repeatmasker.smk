@@ -34,12 +34,12 @@ rule rename_for_repeatmasker:
         fa=join(SPLIT_MULTIFA_DIR, "{sm}_{fname}.fa"),
     output:
         original_fa_idx=temp(
-            join(RM_OUTDIR, "fa", "{sm}_renamed", "{fname}_original.fa.fai"),
+            join(RM_OUTDIR, "fa", "{sm}_original", "{fname}.fa.fai"),
         ),
         renamed_fa=temp(
             join(
                 RM_OUTDIR,
-                "seq",
+                "fa",
                 "{sm}_renamed",
                 "{fname}.fa",
             )
@@ -47,7 +47,7 @@ rule rename_for_repeatmasker:
         renamed_fa_idx=temp(
             join(
                 RM_OUTDIR,
-                "seq",
+                "fa",
                 "{sm}_renamed",
                 "{fname}.fa.fai",
             )
@@ -75,6 +75,14 @@ rule run_repeatmasker:
         setup=rules.setup_repeatmasker.output,
         seq=rules.rename_for_repeatmasker.output.renamed_fa,
     output:
+        rm_seq=temp(
+            join(
+                RM_OUTDIR,
+                "repeats",
+                "{sm}_renamed",
+                "{fname}.fa.masked",
+            )
+        ),
         rm_out=temp(
             join(
                 RM_OUTDIR,
@@ -93,7 +101,7 @@ rule run_repeatmasker:
     resources:
         mem=config["repeatmasker"]["mem"],
     params:
-        output_dir=lambda wc, output: dirname(str(output)),
+        output_dir=lambda wc, output: dirname(str(output.rm_out)),
         species=config["repeatmasker"]["species"],
         engine=config["repeatmasker"]["engine"],
     shell:
@@ -102,23 +110,36 @@ rule run_repeatmasker:
             -engine {params.engine} \
             -species {params.species} \
             -dir {params.output_dir} \
+            -xsmall \
             -pa {threads} \
             {input.seq} &>{log}
         """
 
 
 # Rename repeatmasker output to match the original sequence names.
+# Also convert to original coordinate system if start in name
 rule reformat_repeatmasker_output:
     input:
+        rm_seq=rules.run_repeatmasker.output.rm_seq,
         rm_out=rules.run_repeatmasker.output.rm_out,
         original_fai=rules.rename_for_repeatmasker.output.original_fa_idx,
         renamed_fai=rules.rename_for_repeatmasker.output.renamed_fa_idx,
     output:
-        join(
-            RM_OUTDIR,
-            "repeats",
-            "{sm}",
-            "{fname}.fa.out",
+        rm_seq=temp(
+            join(
+                RM_OUTDIR,
+                "repeats",
+                "{sm}_renamed",
+                "{fname}.fa.masked",
+            )
+        ),
+        rm_out=temp(
+            join(
+                RM_OUTDIR,
+                "repeats",
+                "{sm}",
+                "{fname}.fa.out",
+            )
         ),
     log:
         join(RM_LOGDIR, "reformat_repeatmasker_output_{sm}_{fname}.log"),
@@ -129,20 +150,23 @@ rule reformat_repeatmasker_output:
     shell:
         """
         python {params.script} -i {input.rm_out} -of {input.original_fai} -rf {input.renamed_fai} >{output} 2>{log}
+        awk '{ if ($1 ~ ">") { $1=">{wildcards.fname}"} print }' {input.rm_seq} >{output.rm_seq}
         """
 
 
 # Gather all RM output
-def refmt_rm_output(wc):
+def refmt_rm_output(wc, typ: str):
     _ = checkpoints.split_multifasta.get(**wc).output
     fnames = glob_wildcards(join(SPLIT_MULTIFA_DIR, f"{wc.sm}_{{fname}}.fa")).fname
 
-    return expand(rules.reformat_repeatmasker_output.output, sm=wc.sm, fname=fnames)
+    return expand(
+        getattr(rules.reformat_repeatmasker_output.output, typ), sm=wc.sm, fname=fnames
+    )
 
 
 rule repeatmasker_output:
     input:
-        rm_out=refmt_rm_output,
+        rm_out=lambda wc: refmt_rm_output(wc, "rm_out"),
         # Force snakemake to not evaluate chkpt function until all dirs created.
         rm_fa_chkpt=expand(rules.split_multifasta.output, sm=SAMPLES),
     output:
@@ -157,6 +181,33 @@ rule repeatmasker_output:
     shell:
         """
         awk -v OFS="\\t" '{{$1=$1; print}}' {input.rm_out} >{output}
+        """
+
+
+rule repeatmasker_softmasked_assembly:
+    input:
+        rm_seq=lambda wc: refmt_rm_output(wc, "rm_seq"),
+        # Force snakemake to not evaluate chkpt function until all dirs created.
+        rm_fa_chkpt=expand(rules.split_multifasta.output, sm=SAMPLES),
+    output:
+        seq=join(
+            RM_OUTDIR,
+            "fa",
+            "all",
+            "{sm}.fa.gz",
+        ),
+        idx=join(
+            RM_OUTDIR,
+            "fa",
+            "all",
+            "{sm}.fa.gz.fai",
+        ),
+    conda:
+        "../envs/tools.yaml"
+    shell:
+        """
+        cat {input.rm_seq} | bgzip >{output.seq}
+        samtools faidx {output.seq}
         """
 
 

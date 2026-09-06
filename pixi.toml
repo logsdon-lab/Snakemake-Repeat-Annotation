@@ -13,3 +13,4 @@ conda = ">=26.7.2,<27"
 snakemake = { version = ">=9.26.1,<10", channel = "bioconda" }
 snakefmt = ">=2.0.3,<3"
 ruff = ">=0.16.6,<0.17"
+samtools = ">=1.24,<2"

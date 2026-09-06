@@ -69,9 +69,11 @@ def main():
                 )
             mtch = RGX_ST_COORD.search(line[4])
             if mtch:
-                ctg_st = int(mtch.group(2))
-                line[5] = str(int(line[7]) + ctg_st)
-                line[6] = str(int(line[8]) + ctg_st)
+                ctg_st = int(mtch.group(1))
+                st = int(line[5])
+                end = int(line[6])
+                line[5] = str(st + ctg_st)
+                line[6] = str(end + ctg_st)
 
             rm_writer.writerow(line)
 

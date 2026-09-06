@@ -25,6 +25,13 @@ if config.get("humas_annot"):
     outputs.append(rules.humas_annot_all.input)
 
 
+if config.get("biser"):
+
+    include: "rules/biser.smk"
+
+    outputs.append(rules.biser_all.input)
+
+
 rule cleanup_split_fa:
     input:
         chkpt=outputs,
@@ -33,7 +40,7 @@ rule cleanup_split_fa:
         touch(join(OUTPUT_DIR, "fa", "cleanup_{sm}.done")),
     shell:
         """
-        cat {input.fofn} | xargs -I {{}} bash -c "rm {{}}"
+        cat {input.fofn} | xargs -I {{}} bash -c "rm -f {{}}"
         """
 
 

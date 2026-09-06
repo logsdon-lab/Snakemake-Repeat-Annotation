@@ -3,9 +3,10 @@ channels:
 - bioconda
 dependencies:
 - python==3.12
-- repeatmasker==4.1.0
+- repeatmasker==4.1.2.p1
 - seqtk
 - samtools
 - pip
 - pip:
+  - biser==1.4
   - ModDotPlot>=0.9.1

@@ -1,10 +1,11 @@
 # Snakemake-Repeat-Annotation
-Workflow to run repeat annotation.
+Workflow to run various repeat annotation tasks.
 
 Runs:
 * `RepeatMasker`
 * `ModDotPlot`
 * `HumAS-SD` or `HumAS-HMMER`
+* `biser`
 
 ## Getting Started
 ```bash
@@ -15,7 +16,7 @@ cd Snakemake-Repeat-Annotation
 ## Usage
 ```bash
 pixi install
-snakemake -np --configfile config/config.yaml
+pixi run snakemake -np --configfile config/config.yaml
 ```
 
 ## Configuration
@@ -50,6 +51,10 @@ humas_annot:
   threads: 12
   mem: 20GB
   hmm_profile: "data/AS-HORs-hmmer3.4-071024.hmm.gz"
+
+biser:
+  threads: 8
+  mem: 20GB
 ```
 
 To only run select workflows, just comment/omit the unwanted sections in the config:

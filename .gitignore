@@ -5,7 +5,6 @@ results*
 RM_*
 core*
 .cache
-*.yaml
 # pixi environments
 .pixi/*
 !.pixi/config.toml
