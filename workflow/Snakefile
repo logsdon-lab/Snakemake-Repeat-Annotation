@@ -38,7 +38,7 @@ rule cleanup_split_fa:
 
 
 rule all:
+    default_target: True
     input:
         outputs,
         expand(rules.cleanup_split_fa.output, sm=SAMPLES),
-    default_target: True

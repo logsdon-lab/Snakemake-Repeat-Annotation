@@ -18,23 +18,23 @@ rule moddotplot:
             ext=["png", "svg"],
         ),
         bed=join(MODDOTPLOT_OUTDIR, "{sm}", "{fname}", "{fname}.bed"),
-    conda:
-        "../envs/tools.yaml"
-    params:
-        window=config["moddotplot"]["window"],
-        ident_thr=config["moddotplot"]["ident_thr"],
-        outdir=lambda wc, output: os.path.dirname(output.bed),
-    resources:
-        mem=config["moddotplot"]["mem"],
     log:
         join(MODDOTPLOT_LOGDIR, "moddotplot_{sm}_{fname}.log"),
     benchmark:
         join(MODDOTPLOT_BMKDIR, "moddotplot_{sm}_{fname}.tsv")
+    conda:
+        "../envs/tools.yaml"
+    resources:
+        mem=config["moddotplot"]["mem"],
+    params:
+        window=config["moddotplot"]["window"],
+        ident_thr=config["moddotplot"]["ident_thr"],
+        outdir=lambda wc, output: os.path.dirname(output.bed),
     # singularity:
     #     "/project/logsdon_shared/tools/moddotplot.sif"
     shell:
         """
-        moddotplot static -f {input.fasta} -w {params.window} -o {params.outdir} -id {params.ident_thr} &> {log}
+        moddotplot static -f {input.fasta} -w {params.window} -o {params.outdir} -id {params.ident_thr} &>{log}
         """
 
 
@@ -51,7 +51,7 @@ rule convert_bedpe_to_absolute:
             $1 += sts[1]; $2 += sts[1];
             $4 += sts[1]; $5 += sts[1];
             print
-        }}' {input} > {output}
+        }}' {input} >{output}
         """
 
 

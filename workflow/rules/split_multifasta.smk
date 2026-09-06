@@ -12,13 +12,13 @@ checkpoint split_multifasta:
         ),
     log:
         join(LOG_DIR, "split_multifasta_{sm}.log"),
+    conda:
+        "../envs/tools.yaml"
     params:
         output_dir=SPLIT_MULTIFA_DIR,
         extract_region=lambda wc, input: (
             f"| seqtk subseq - {input.bed}" if input.bed else ""
         ),
-    conda:
-        "../envs/tools.yaml"
     shell:
         # https://gist.github.com/astatham/621901
         """
@@ -29,5 +29,5 @@ checkpoint split_multifasta:
                 print filename
             }}
             print $0 > filename
-        }}' <(zcat -f {input.fa} {params.extract_region}) > {output} 2> {log}
+        }}' <(zcat -f {input.fa} {params.extract_region}) >{output} 2>{log}
         """

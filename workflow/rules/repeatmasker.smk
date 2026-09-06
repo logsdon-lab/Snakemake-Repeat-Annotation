@@ -8,24 +8,24 @@ rule setup_repeatmasker:
         chkpt=touch(join(RM_OUTDIR, "rm_setup.done")),
         seq=join(RM_OUTDIR, "rm_setup.fa"),
         rm_dir=directory(join(RM_OUTDIR, "rm_setup")),
-    params:
-        species=config["repeatmasker"]["species"],
-        engine=config["repeatmasker"]["engine"],
-    threads: 1
     log:
         join(RM_LOGDIR, "setup_repeatmasker.log"),
     conda:
         "../envs/tools.yaml"
+    threads: 1
+    params:
+        species=config["repeatmasker"]["species"],
+        engine=config["repeatmasker"]["engine"],
     shell:
         """
-        echo ">rm_setup" > {output.seq}
-        echo "NNNNNNNNNNNNNNNNNNNNN" >> {output.seq}
+        echo ">rm_setup" >{output.seq}
+        echo "NNNNNNNNNNNNNNNNNNNNN" >>{output.seq}
         RepeatMasker \
             -engine {params.engine} \
             -species {params.species} \
             -dir {output.rm_dir} \
             -pa {threads} \
-            {output.seq} &> {log}
+            {output.seq} &>{log}
         """
 
 
@@ -52,18 +52,18 @@ rule rename_for_repeatmasker:
                 "{fname}.fa.fai",
             )
         ),
-    params:
-        prefix="seq",
-    conda:
-        "../envs/tools.yaml"
     log:
         join(RM_LOGDIR, "rename_for_repeatmasker_{sm}_{fname}.log"),
+    conda:
+        "../envs/tools.yaml"
+    params:
+        prefix="seq",
     shell:
         """
-        samtools faidx {input.fa} -o {output.original_fa_idx} 2> {log}
-        seqtk rename {input.fa} {params.prefix} > {output.renamed_fa} 2>> {log}
+        samtools faidx {input.fa} -o {output.original_fa_idx} 2>{log}
+        seqtk rename {input.fa} {params.prefix} >{output.renamed_fa} 2>>{log}
         if [ -s {output.renamed_fa} ]; then
-            samtools faidx {output.renamed_fa} 2>> {log}
+            samtools faidx {output.renamed_fa} 2>>{log}
         else
             touch {output.renamed_fa_idx}
         fi
@@ -83,27 +83,27 @@ rule run_repeatmasker:
                 "{fname}.fa.out",
             )
         ),
-    threads: config["repeatmasker"]["threads"]
-    params:
-        output_dir=lambda wc, output: dirname(str(output)),
-        species=config["repeatmasker"]["species"],
-        engine=config["repeatmasker"]["engine"],
-    resources:
-        mem=config["repeatmasker"]["mem"],
-    conda:
-        "../envs/tools.yaml"
     log:
         join(RM_LOGDIR, "repeatmasker_{sm}_{fname}.log"),
     benchmark:
         join(RM_BMKDIR, "repeatmasker_{sm}_{fname}.tsv")
+    conda:
+        "../envs/tools.yaml"
+    threads: config["repeatmasker"]["threads"]
+    resources:
+        mem=config["repeatmasker"]["mem"],
+    params:
+        output_dir=lambda wc, output: dirname(str(output)),
+        species=config["repeatmasker"]["species"],
+        engine=config["repeatmasker"]["engine"],
     shell:
         """
         RepeatMasker \
-        -engine {params.engine} \
-        -species {params.species} \
-        -dir {params.output_dir} \
-        -pa {threads} \
-        {input.seq} &> {log}
+            -engine {params.engine} \
+            -species {params.species} \
+            -dir {params.output_dir} \
+            -pa {threads} \
+            {input.seq} &>{log}
         """
 
 
@@ -120,15 +120,15 @@ rule reformat_repeatmasker_output:
             "{sm}",
             "{fname}.fa.out",
         ),
-    params:
-        script=workflow.source_path("../scripts/rename_rm.py"),
     log:
         join(RM_LOGDIR, "reformat_repeatmasker_output_{sm}_{fname}.log"),
     conda:
         "../envs/tools.yaml"
+    params:
+        script=workflow.source_path("../scripts/rename_rm.py"),
     shell:
         """
-        python {params.script} -i {input.rm_out} -of {input.original_fai} -rf {input.renamed_fai} > {output} 2> {log}
+        python {params.script} -i {input.rm_out} -of {input.original_fai} -rf {input.renamed_fai} >{output} 2>{log}
         """
 
 
@@ -156,11 +156,11 @@ rule repeatmasker_output:
         "../envs/tools.yaml"
     shell:
         """
-        awk -v OFS="\\t" '{{$1=$1; print}}' {input.rm_out} > {output}
+        awk -v OFS="\\t" '{{$1=$1; print}}' {input.rm_out} >{output}
         """
 
 
 rule repeatmasker_all:
+    default_target: True
     input:
         expand(rules.repeatmasker_output.output, sm=SAMPLES),
-    default_target: True

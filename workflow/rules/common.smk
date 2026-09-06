@@ -1,6 +1,5 @@
 from os.path import join, dirname
 
-
 SAMPLES = config["samples"].keys()
 OUTPUT_DIR = config.get("output_dir", "results")
 LOG_DIR = config.get("log_dir", "logs")

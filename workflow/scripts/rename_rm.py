@@ -12,6 +12,7 @@ logging.basicConfig(
 
 RGX_ST_COORD = re.compile(r"^.+:(\d+)-")
 
+
 def main():
     ap = argparse.ArgumentParser("Reformat RepeatMasker output.")
 

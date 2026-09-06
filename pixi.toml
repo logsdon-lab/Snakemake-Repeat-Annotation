@@ -1,0 +1,15 @@
+[workspace]
+authors = ["Keith Oshima <koshima789@gmail.com>"]
+channels = ["conda-forge", "https://conda.anaconda.org/bioconda"]
+name = "Snakemake-Repeat-Annotation"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+fmt = "snakefmt . && ruff format ."
+
+[dependencies]
+conda = ">=26.7.2,<27"
+snakemake = { version = ">=9.26.1,<10", channel = "bioconda" }
+snakefmt = ">=2.0.3,<3"
+ruff = ">=0.16.6,<0.17"

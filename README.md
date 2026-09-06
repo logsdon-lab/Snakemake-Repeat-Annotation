@@ -9,10 +9,12 @@ Runs:
 ## Getting Started
 ```bash
 git clone https://github.com/logsdon-lab/Snakemake-Repeat-Annotation.git --recursive
+cd Snakemake-Repeat-Annotation
 ```
 
 ## Usage
 ```bash
+pixi install
 snakemake -np --configfile config/config.yaml
 ```
 

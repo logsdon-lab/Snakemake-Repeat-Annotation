@@ -40,7 +40,7 @@ rule convert_stv_bed_to_absolute_coords:
             match($1, ":(.+)-", sts);
             $1 += sts[1]; $2 += sts[1];
             print
-        }}' {input} > {output}
+        }}' {input} >{output}
         """
 
 
@@ -74,6 +74,6 @@ rule run_humas_annot:
 
 
 rule humas_annot_all:
+    default_target: True
     input:
         expand(rules.run_humas_annot.output, sm=SAMPLES),
-    default_target: True

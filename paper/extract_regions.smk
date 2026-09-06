@@ -1,6 +1,5 @@
 import os
 
-
 ASM_DIR = "/project/logsdon_shared/projects/HGSVC3/new_65_asms_renamed/"
 with open(
     "/project/logsdon_shared/projects/HGSVC3/Snakemake-MutationRate/SG_working/tree_based_mutation_rate/all.bed"
@@ -26,7 +25,7 @@ rule slop_bed:
         bp_slop=1_000_000,
     shell:
         """
-        python {params.script} {input.fa_dir} {input.bed} {params.bp_slop} > {output}
+        python {params.script} {input.fa_dir} {input.bed} {params.bp_slop} >{output}
         """
 
 
@@ -38,7 +37,7 @@ rule extract_regions:
         "results/split_fa/{sm}.fa.gz",
     shell:
         """
-        seqtk subseq {input.asm} <(cut -f 1-3 {input.bed}) | bgzip > {output}
+        seqtk subseq {input.asm} <(cut -f 1-3 {input.bed}) | bgzip >{output}
         samtools faidx {output}
         """
 
@@ -53,11 +52,11 @@ rule make_config:
         script=workflow.source_path("make_cfg.py"),
     shell:
         """
-        python {params.script} -c {input.cfg} -i {input.fa} > {output}
+        python {params.script} -c {input.cfg} -i {input.fa} >{output}
         """
 
 
 rule all:
+    default_target: True
     input:
         rules.make_config.output,
-    default_target: True
