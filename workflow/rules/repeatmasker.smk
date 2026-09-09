@@ -129,7 +129,7 @@ rule reformat_repeatmasker_output:
             join(
                 RM_OUTDIR,
                 "repeats",
-                "{sm}_renamed",
+                "{sm}",
                 "{fname}.fa.masked",
             )
         ),
