@@ -17,9 +17,11 @@ rule run_biser:
     threads: config["biser"]["threads"]
     resources:
         mem=config["biser"]["mem"],
+        gc_heap=config["biser"]["mem"].strip("B"),
     shell:
         """
-        biser -o {output} -t {threads} {input.fa}
+        # https://github.com/0xTCG/biser/issues/32
+        biser -o {output} -t {threads} --gc-heap {resources.gc_heap} {input.fa}
         """
 
 

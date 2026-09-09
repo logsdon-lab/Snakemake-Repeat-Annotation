@@ -107,12 +107,12 @@ rule run_repeatmasker:
     shell:
         """
         {{ RepeatMasker \
-            -engine {params.engine} \
-            -species {params.species} \
-            -dir {params.output_dir} \
-            -xsmall \
-            -pa {threads} \
-            {input.seq} || true ;}} &>{log}
+                    -engine {params.engine} \
+                    -species {params.species} \
+                    -dir {params.output_dir} \
+                    -xsmall \
+                    -pa {threads} \
+                    {input.seq} || true ;}} &>{log}
         touch {output}
         """
 
