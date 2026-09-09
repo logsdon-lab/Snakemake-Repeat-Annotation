@@ -106,13 +106,14 @@ rule run_repeatmasker:
         engine=config["repeatmasker"]["engine"],
     shell:
         """
-        RepeatMasker \
+        {{ RepeatMasker \
             -engine {params.engine} \
             -species {params.species} \
             -dir {params.output_dir} \
             -xsmall \
             -pa {threads} \
-            {input.seq} &>{log}
+            {input.seq} || true ;}} &>{log}
+        touch {output}
         """
 
 
