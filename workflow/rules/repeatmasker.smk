@@ -150,7 +150,7 @@ rule reformat_repeatmasker_output:
         script=workflow.source_path("../scripts/rename_rm.py"),
     shell:
         """
-        python {params.script} -i {input.rm_out} -of {input.original_fai} -rf {input.renamed_fai} >{output} 2>{log}
+        python {params.script} -i {input.rm_out} -of {input.original_fai} -rf {input.renamed_fai} >{output.rm_out} 2>{log}
         awk '{{ if ($1 ~ ">") {{ $1=">{wildcards.fname}" }} print }}' {input.rm_seq} >{output.rm_seq}
         """
 
