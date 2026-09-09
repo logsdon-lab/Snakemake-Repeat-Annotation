@@ -21,7 +21,7 @@ rule run_biser:
     shell:
         """
         # https://github.com/0xTCG/biser/issues/32
-        biser -o {output} -t {threads} --gc-heap {resources.gc_heap} {input.fa}
+        biser -o {output} -t {threads} --keep-contigs --gc-heap {resources.gc_heap} {input.fa}
         """
 
 
